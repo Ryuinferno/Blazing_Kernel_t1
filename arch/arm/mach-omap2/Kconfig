@@ -461,6 +461,13 @@ config OMAP4_HSOTG_ED_CORRECTION
 	  improve Eye Diagram at least 8%.
 endmenu
 
+config FORCE_FAST_CHARGE
+        bool "Force AC charge mode at will"
+        default y
+        help
+          A simple sysfs interface to force adapters that
+          are detected as USB to charge as AC. 
+
 endif
 
 source arch/arm/mach-omap2/Kconfig.sec
