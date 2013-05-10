@@ -62,6 +62,9 @@ extern struct mmc_platform_data t1_wifi_data;
 /** @category Bluetooth */
 void bcm_bt_lpm_exit_lpm_locked(struct uart_port *uport);
 
+/** @category vibrator */
+void __init omap4_t1_vibrator_init(void);
+
 /** @category FM-Radio */
 void omap4_t1_fmradio_init(void);
 
