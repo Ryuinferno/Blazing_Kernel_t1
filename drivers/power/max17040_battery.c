@@ -33,6 +33,10 @@
 #include <linux/uaccess.h>
 #endif
 
+#ifdef CONFIG_BLX
+#include <linux/blx.h>
+#endif 
+
 
 #define MAX17040_VCELL_MSB	0x02
 #define MAX17040_VCELL_LSB	0x03
@@ -429,8 +433,14 @@ static void max17040_charger_update(struct max17040_chip *chip)
 	switch (chip->charger_status) {
 	case STATUS_CHARGABLE:
 #ifdef CONFIG_USE_CHG_ADC_POLLING
+#ifdef CONFIG_BLX
+		if ((get_charginglimit() != MAX_CHARGINGLIMIT && chip->soc >= get_charginglimit()) ||
+		    (chip->soc >= MAX17040_BATTERY_FULL &&
+		     chip->vcell > chip->pdata->fully_charged_vol)) {
+#else 
 		if (chip->soc >= MAX17040_BATTERY_FULL &&
 		    chip->vcell > chip->pdata->fully_charged_vol) {
+#endif
 			full_charge_state = NOT_FULL;
 			if (chip->pdata->is_full_charge)
 				full_charge_state =
@@ -502,7 +512,12 @@ static void max17040_charger_update(struct max17040_chip *chip)
 		break;
 
 	case STATUS_CHARGE_FULL:
+#ifdef CONFIG_BLX
+		if ((get_charginglimit() == MAX_CHARGINGLIMIT || chip->soc < get_charginglimit()) &&
+		    chip->vcell <= chip->pdata->recharge_vol) {
+#else 
 		if (chip->vcell <= chip->pdata->recharge_vol) {
+#endif
 			chip->charger_status = STATUS_CHARGABLE;
 #ifdef CONFIG_USE_CHG_ADC_POLLING
 			chip->is_full_charged = false;
@@ -532,7 +547,12 @@ static void max17040_charger_update(struct max17040_chip *chip)
 		break;
 
 	case STATUS_CHARGE_TIMEOVER:
+#ifdef CONFIG_BLX
+		if ((get_charginglimit() == MAX_CHARGINGLIMIT || chip->soc < get_charginglimit()) &&
+		    chip->vcell <= chip->pdata->fully_charged_vol) {
+#else 
 		if (chip->vcell <= chip->pdata->fully_charged_vol) {
+#endif
 			chip->charger_status = STATUS_CHARGABLE;
 			if (chip->pdata->restore_charger_mode)
 				chip->pdata->
