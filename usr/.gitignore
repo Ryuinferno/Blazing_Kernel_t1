@@ -14,3 +14,6 @@ include
 #
 !i9100g_initramfs_files/busybox
 !i9100g_initramfs_files/init
+!pvr-source/services4/include
+!pvr-source/services4/srvkm/include
+!pvr-source/services4/system/include
