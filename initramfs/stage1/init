@@ -1,0 +1,60 @@
+#!/stage1/busybox sh
+_PATH="$PATH"
+export PATH=/stage1
+
+busybox cd /
+busybox date >>boot.txt
+exec >>boot.txt 2>&1
+busybox rm init
+busybox mount -t proc proc /proc
+busybox mount -t sysfs sysfs /sys
+busybox mknod /dev/block/mmcblk0p9 b 259 1
+busybox mknod /dev/block/mmcblk0p11 b 259 3
+busybox mount -t ext4 /dev/block/mmcblk0p9 /test
+busybox mount -t vfat /dev/block/mmcblk0p11 /test1
+
+load_image=/stage1/boot.cpio
+
+if [ -d /test1/SDRoms ]; then
+	cfgfile=/test1/SDRoms/bootsdrom.cfg
+	rom=`busybox grep ^type= "$cfgfile" | busybox sed -e "s/type=//g"`
+        default=`busybox grep ^default= "$cfgfile" | busybox sed -e "s/default=//g"`
+	if [ $default == "sdcard" ]; then
+		if [ $rom == "stock" ]; then
+			echo "Stock ROM" >> boot.txt
+		else
+			echo "AOSP ROM" >> boot.txt
+			load_image=/stage1/boot1.cpio
+		fi
+	else
+		if [ -e /test/framework/framework2.jar ]; then
+			echo "Stock ROM" >> boot.txt
+		else
+			echo "AOSP ROM" >> boot.txt
+			load_image=/stage1/boot1.cpio
+		fi
+	fi
+else
+	if [ -e /test/framework/framework2.jar ]; then
+		echo "Stock ROM" >> boot.txt
+	else
+		echo "AOSP ROM" >> boot.txt
+		load_image=/stage1/boot1.cpio
+	fi
+fi 
+
+if busybox grep -q bootmode=2 /proc/cmdline ; then
+	# recovery boot
+	load_image=/stage1/recovery.cpio
+fi
+
+busybox cpio -i < ${load_image}
+
+busybox umount /test
+busybox umount /test1
+busybox umount /sys
+busybox umount /proc
+busybox date >>boot.txt
+busybox rm -fr /test /test1 /stage1 /dev/*
+export PATH="${_PATH}"
+exec /init
