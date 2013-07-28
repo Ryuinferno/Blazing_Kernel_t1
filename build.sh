@@ -5,6 +5,7 @@ VERSION="v11"
 TOOLCHAIN="/opt/linaro-4.7.4/bin/arm-cortex_a9-linux-gnueabi-"
 TOOLCHAIN2="/opt/arm-eabi-4.6/bin/arm-eabi-"
 OUTDIR="../out"
+OUTDIR2="out"
 ZIPDIR="../tools/zipfile"
 PLACEHOLDER="Delete_before_compiling"
 ANDROID="initramfs/ramdisk_boot"
@@ -23,6 +24,7 @@ START=$(date +%s)
           # for a clean build
           make mrproper CROSS_COMPILE=${TOOLCHAIN}
           rm -rf ${OUTDIR}
+          rm -rf ${OUTDIR2}
           rm -f ../tools/zipfile/system/lib/modules/cifs.ko
           rm -f ../tools/zipfile/system/lib/modules/dhd.ko
           rm -f ../tools/zipfile/system/lib/modules/j4fs.ko
@@ -34,7 +36,12 @@ START=$(date +%s)
           rm -f ../tools/zipfile/system/lib/modules/sunrpc.ko
    ;;
    *)  
-        mkdir -p ${OUTDIR}   
+        if [ $blaze -eq 1 ]; then
+            mkdir -p ${OUTDIR}
+        else
+            mkdir -p ${OUTDIR2}
+        fi
+   
         make -j8 blazing_defconfig CROSS_COMPILE=${TOOLCHAIN}
        
         # create modules first to include in ramdisk
@@ -42,18 +49,30 @@ START=$(date +%s)
 
         for module in "${MODULES[@]}" ; do
             cp "${module}" ${ANDROID}/lib/modules
-            cp "${module}" ${ZIPDIR}/system/lib/modules
+            if [ $blaze -eq 1 ]; then
+                cp "${module}" ${ZIPDIR}/system/lib/modules
+            else
+                cp "${module}" ${OUTDIR2}
+            fi
         done  
         chmod 644 ${ANDROID}/lib/modules/*
         
         for module in "${MODULES_EXT[@]}" ; do
-            cp "${module}" ${ZIPDIR}/system/lib/modules
+            if [ $blaze -eq 1 ]; then
+                cp "${module}" ${ZIPDIR}/system/lib/modules
+            else
+                cp "${module}" ${OUTDIR2}
+            fi
         done
         chmod 644 ${ZIPDIR}/system/lib/modules/*
 
         cd usr/pvr-source/eu*/bu*/li*/om*
         make -j8 ARCH=arm CROSS_COMPILE=${TOOLCHAIN2} KERNELDIR=~/Repos/Dual/kernel TARGET_PRODUCT="blaze_tablet" BUILD=release TARGET_SGX=540 PLATFORM_VERSION=4.0
-        mv ../../../bi*/target/pvrsrvkm_sgx540_120.ko ../../../../../../${ZIPDIR}/system/lib/modules
+        if [ $blaze -eq 1 ]; then
+            mv ../../../bi*/target/pvrsrvkm_sgx540_120.ko ../../../../../../${ZIPDIR}/system/lib/modules
+        else
+            mv ../../../bi*/target/pvrsrvkm_sgx540_120.ko ../../../../../../${OUTDIR2}
+        fi
         rm -r ../../../bi*
         cd ../../../../../..
 
@@ -113,21 +132,27 @@ START=$(date +%s)
         # build the zImage
         echo 0 > .version
         make -j8 CROSS_COMPILE=${TOOLCHAIN}
-        cp arch/arm/boot/zImage ${OUTDIR}
-        cp arch/arm/boot/zImage ${ZIPDIR}
+        if [ $blaze -eq 1 ]; then
+            cp arch/arm/boot/zImage ${OUTDIR}
+            cp arch/arm/boot/zImage ${ZIPDIR}
+        else
+            cp arch/arm/boot/zImage ${OUTDIR2}
+        fi
      
       cd ..
 
-        # creating zip for kernel
-        echo "Creating flashable zip..."
-        cd tools/zipfile
-        zip -r Blazing_Kernel_${VERSION}_${REC_NAME}.zip *
-        cd ..
-        echo "Sigining zip..."
-        java -jar signapk.jar -w testkey.x509.pem testkey.pk8 zipfile/Blazing_Kernel_${VERSION}_${REC_NAME}.zip ${OUTDIR}/Blazing_Kernel_${VERSION}_${REC_NAME}.zip
+        if [ $blaze -eq 1 ]; then
+            # creating zip for kernel
+            echo "Creating flashable zip..."
+            cd tools/zipfile
+            zip -r Blazing_Kernel_${VERSION}_${REC_NAME}.zip *
+            cd ..
+            echo "Sigining zip..."
+            java -jar signapk.jar -w testkey.x509.pem testkey.pk8 zipfile/Blazing_Kernel_${VERSION}_${REC_NAME}.zip ${OUTDIR}/Blazing_Kernel_${VERSION}_${REC_NAME}.zip
   
-      rm zipfile/*.zip zipfile/zImage 
-      cd ../kernel
+            rm zipfile/*.zip zipfile/zImage 
+            cd ../kernel
+        fi
    ;;
    esac
 
