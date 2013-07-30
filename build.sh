@@ -3,7 +3,7 @@
 # variables
 VERSION="v11"
 TOOLCHAIN="/opt/linaro-4.7.4/bin/arm-cortex_a9-linux-gnueabi-"
-TOOLCHAIN2="/opt/arm-eabi-4.6/bin/arm-eabi-"
+TOOLCHAIN2="/opt/arm-eabi-4.7/bin/arm-eabi-"
 OUTDIR="../out"
 OUTDIR2="out"
 ZIPDIR="../tools/zipfile"
@@ -93,8 +93,8 @@ START=$(date +%s)
         echo > system/$PLACEHOLDER
         cd ..
 
-        # create the recovery ramdisk, "cwm6" is for 6.0.1.2, "old" is for 5.5.0.4, "touch" is for touch recovery, "twrp" for TWRP 2.5, "philz" for Philz recovery 5.07.1
-        # default is modified 6.0.3.2
+        # create the recovery ramdisk, "cwm6" is for 6.0.1.2, "old" is for 5.5.0.4, "touch" is for touch recovery, "twrp" for TWRP 2.6, "philz" for Philz recovery 5.07.1
+        # default is modified 6.0.3.4
       case "$1" in
       touch)
         RECOVERY=${REC_TOUCH}
@@ -120,12 +120,8 @@ START=$(date +%s)
 
         rm stage1/recovery.cpio
         cd ${RECOVERY}
-        rm data/$PLACEHOLDER
-        rm system/bin/$PLACEHOLDER
         rm tmp/$PLACEHOLDER
         find . | cpio -o -H newc > ../stage1/recovery.cpio
-        echo > data/$PLACEHOLDER
-        echo > system/bin/$PLACEHOLDER
         echo > tmp/$PLACEHOLDER
         cd ../.. 
         
