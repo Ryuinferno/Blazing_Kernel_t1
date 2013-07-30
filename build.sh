@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # variables
-VERSION="v11"
+VERSION="v12"
 TOOLCHAIN="/opt/linaro-4.7.4/bin/arm-cortex_a9-linux-gnueabi-"
 OUTDIR="../out"
 OUTDIR2="out"
