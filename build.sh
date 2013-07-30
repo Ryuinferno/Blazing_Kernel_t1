@@ -3,7 +3,6 @@
 # variables
 VERSION="v11"
 TOOLCHAIN="/opt/linaro-4.7.4/bin/arm-cortex_a9-linux-gnueabi-"
-TOOLCHAIN2="/opt/arm-eabi-4.7/bin/arm-eabi-"
 OUTDIR="../out"
 OUTDIR2="out"
 ZIPDIR="../tools/zipfile"
@@ -67,7 +66,7 @@ START=$(date +%s)
         chmod 644 ${ZIPDIR}/system/lib/modules/*
 
         cd usr/pvr-source/eu*/bu*/li*/om*
-        make -j8 ARCH=arm CROSS_COMPILE=${TOOLCHAIN2} KERNELDIR=~/Repos/Dual/kernel TARGET_PRODUCT="blaze_tablet" BUILD=release TARGET_SGX=540 PLATFORM_VERSION=4.0
+        make -j8 ARCH=arm CROSS_COMPILE=${TOOLCHAIN} KERNELDIR=~/Repos/Dual/kernel TARGET_PRODUCT="blaze_tablet" BUILD=release TARGET_SGX=540 PLATFORM_VERSION=4.0
         if [ $blaze -eq 1 ]; then
             mv ../../../bi*/target/pvrsrvkm_sgx540_120.ko ../../../../../../${ZIPDIR}/system/lib/modules
         else
