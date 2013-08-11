@@ -93,7 +93,7 @@ START=$(date +%s)
         cd ..
 
         # create the recovery ramdisk, "cwm6" is for 6.0.1.2, "old" is for 5.5.0.4, "touch" is for touch recovery, "twrp" for TWRP 2.6, "philz" for Philz recovery 5.08.5
-        # default is modified 6.0.3.4
+        # default is modified 6.0.3.5
       case "$1" in
       touch)
         RECOVERY=${REC_TOUCH}

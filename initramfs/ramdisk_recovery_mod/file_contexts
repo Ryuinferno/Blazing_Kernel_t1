@@ -144,6 +144,10 @@
 /system/vendor/bin/gpsd u:object_r:gpsd_exec:s0
 /system/bin/ping    u:object_r:ping_exec:s0
 #############################
+# Preload files
+#
+/preload(/.*)?		u:object_r:system_file:s0
+#############################
 # Data files
 #
 /data(/.*)?		u:object_r:system_data_file:s0
