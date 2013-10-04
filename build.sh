@@ -2,7 +2,7 @@
 
 # variables
 VERSION="v12"
-TOOLCHAIN="/opt/linaro-4.7.4/bin/arm-cortex_a9-linux-gnueabi-"
+TOOLCHAIN="/opt/linaro-4.7.4-2013.09/bin/arm-cortex_a9-linux-gnueabi-"
 OUTDIR="../out"
 OUTDIR2="out"
 ZIPDIR="../tools/zipfile"
@@ -102,8 +102,8 @@ START=$(date +%s)
         echo > system/$PLACEHOLDER
         cd ..
 
-        # create the recovery ramdisk, "cwm6" is for 6.0.1.2, "old" is for 5.5.0.4, "touch" is for touch recovery, "twrp" for TWRP 2.6, "philz" for Philz recovery 5.08.5
-        # default is modified 6.0.3.5
+        # create the recovery ramdisk, "cwm6" is for 6.0.1.2, "old" is for 5.5.0.4, "touch" is for touch recovery, "twrp" for TWRP 2.6, "philz" for Philz recovery 5.15.0
+        # default is modified 6.0.4.0
       case "$1" in
       touch)
         RECOVERY=${REC_TOUCH}
