@@ -9,6 +9,7 @@ ZIPDIR="../tools/zipfile"
 PLACEHOLDER="Delete_before_compiling"
 ANDROID="initramfs/ramdisk_boot"
 ANDROID2="ramdisk_boot1"
+ANDROID3="ramdisk_boot2"
 REC="ramdisk_recovery"
 REC_TOUCH="ramdisk_recovery_touch"
 REC_MOD="ramdisk_recovery_mod"
@@ -35,7 +36,7 @@ START=$(date +%s)
           rm -f ../tools/zipfile/system/lib/modules/sunrpc.ko
    ;;
    *)  
-        if [ $blaze -eq 1 ]; then
+        if [ ! -z "$blaze" ]; then
             mkdir -p ${OUTDIR}
         else
             mkdir -p ${OUTDIR2}
@@ -48,7 +49,7 @@ START=$(date +%s)
 
         for module in "${MODULES[@]}" ; do
             cp "${module}" ${ANDROID}/lib/modules
-            if [ $blaze -eq 1 ]; then
+            if [ ! -z "$blaze" ]; then
                 cp "${module}" ${ZIPDIR}/system/lib/modules
             else
                 cp "${module}" ${OUTDIR2}
@@ -57,7 +58,7 @@ START=$(date +%s)
         chmod 644 ${ANDROID}/lib/modules/*
         
         for module in "${MODULES_EXT[@]}" ; do
-            if [ $blaze -eq 1 ]; then
+            if [ ! -z "$blaze" ]; then
                 cp "${module}" ${ZIPDIR}/system/lib/modules
             else
                 cp "${module}" ${OUTDIR2}
@@ -67,7 +68,7 @@ START=$(date +%s)
 
         cd usr/pvr-source/eu*/bu*/li*/om*
         make -j8 ARCH=arm CROSS_COMPILE=${TOOLCHAIN} KERNELDIR=~/Repos/Dual/kernel TARGET_PRODUCT="blaze_tablet" BUILD=release TARGET_SGX=540 PLATFORM_VERSION=4.0
-        if [ $blaze -eq 1 ]; then
+        if [ ! -z "$blaze" ]; then
             mv ../../../bi*/target/pvrsrvkm_sgx540_120.ko ../../../../../../${ZIPDIR}/system/lib/modules
         else
             mv ../../../bi*/target/pvrsrvkm_sgx540_120.ko ../../../../../../${OUTDIR2}
@@ -88,6 +89,15 @@ START=$(date +%s)
         rm data/$PLACEHOLDER
         rm system/$PLACEHOLDER
         find . | cpio -o -H newc > ../stage1/boot1.cpio
+        echo > data/$PLACEHOLDER
+        echo > system/$PLACEHOLDER
+        cd ..
+        
+        rm stage1/boot2.cpio
+        cd ${ANDROID3}
+        rm data/$PLACEHOLDER
+        rm system/$PLACEHOLDER
+        find . | cpio -o -H newc > ../stage1/boot2.cpio
         echo > data/$PLACEHOLDER
         echo > system/$PLACEHOLDER
         cd ..
@@ -127,7 +137,7 @@ START=$(date +%s)
         # build the zImage
         echo 0 > .version
         make -j8 CROSS_COMPILE=${TOOLCHAIN}
-        if [ $blaze -eq 1 ]; then
+        if [ ! -z "$blaze" ]; then
             cp arch/arm/boot/zImage ${OUTDIR}
             cp arch/arm/boot/zImage ${ZIPDIR}
         else
@@ -136,7 +146,7 @@ START=$(date +%s)
      
       cd ..
 
-        if [ $blaze -eq 1 ]; then
+        if [ ! -z "$blaze" ]; then
             # creating zip for kernel
             echo "Creating flashable zip..."
             cd tools/zipfile

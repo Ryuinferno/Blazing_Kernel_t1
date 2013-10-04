@@ -2,6 +2,19 @@
 _PATH="$PATH"
 export PATH=/stage1
 
+check_dual()
+{
+cfgfile=/test1/SDRoms/bootsdrom.cfg
+rom=`busybox grep ^type= "$cfgfile" | busybox sed -e "s/type=//g"`
+default=`busybox grep ^default= "$cfgfile" | busybox sed -e "s/default=//g"`
+}
+
+check_aosp()
+{
+buildp=/test/build.prop
+version=`busybox grep ^ro.build.version.release= "$buildp" | busybox sed -e "s/ro.build.version.release=//g"`
+}
+
 busybox cd /
 busybox date >>boot.txt
 exec >>boot.txt 2>&1
@@ -16,34 +29,51 @@ busybox mount -t vfat /dev/block/mmcblk0p11 /test1
 load_image=/stage1/boot.cpio
 
 if [ -d /test1/SDRoms ]; then
-	cfgfile=/test1/SDRoms/bootsdrom.cfg
-	rom=`busybox grep ^type= "$cfgfile" | busybox sed -e "s/type=//g"`
-        default=`busybox grep ^default= "$cfgfile" | busybox sed -e "s/default=//g"`
+	check_dual
 	if [ $default == "sdcard" ]; then
 		if [ $rom == "stock" ]; then
 			echo "Stock ROM" >> boot.txt
 		else
-			echo "AOSP ROM" >> boot.txt
-			load_image=/stage1/boot1.cpio
+			check_aosp
+			if [ $version == "4.2.2" ]; then
+				echo "AOSP ROM 4.2.2" >> boot.txt
+				load_image=/stage1/boot1.cpio
+			else
+				echo "AOSP ROM 4.3" >> boot.txt
+				load_image=/stage1/boot2.cpio
+			fi
 		fi
 	else
 		if [ -e /test/framework/framework2.jar ]; then
 			echo "Stock ROM" >> boot.txt
 		else
-			echo "AOSP ROM" >> boot.txt
-			load_image=/stage1/boot1.cpio
+			check_aosp
+			if [ $version == "4.2.2" ]; then
+				echo "AOSP ROM 4.2.2" >> boot.txt
+				load_image=/stage1/boot1.cpio
+			else
+				echo "AOSP ROM 4.3" >> boot.txt
+				load_image=/stage1/boot2.cpio
+			fi
 		fi
 	fi
 else
-	if [ -e /test/framework/framework2.jar ]; then
+	if [ -f /test/framework/framework2.jar ]; then
 		echo "Stock ROM" >> boot.txt
-	else
-		echo "AOSP ROM" >> boot.txt
-		load_image=/stage1/boot1.cpio
+	else 
+		check_aosp
+		if [ $version == "4.2.2" ]; then
+			echo "AOSP ROM 4.2.2" >> boot.txt
+			load_image=/stage1/boot1.cpio
+		else
+			echo "AOSP ROM 4.3" >> boot.txt
+			load_image=/stage1/boot2.cpio
+		fi
+			
 	fi
 fi 
 
-if busybox grep -q bootmode=2 /proc/cmdline ; then
+if busybox grep -q bootmode=2 /proc/cmdline; then
 	# recovery boot
 	load_image=/stage1/recovery.cpio
 fi

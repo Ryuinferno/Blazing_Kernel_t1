@@ -26,4 +26,5 @@ dir /mnt 755 0 0
 dir /mnt/.lfs 755 0 0
 file /stage1/boot.cpio initramfs/stage1/boot.cpio 644 0 0
 file /stage1/boot1.cpio initramfs/stage1/boot1.cpio 644 0 0
+file /stage1/boot2.cpio initramfs/stage1/boot2.cpio 644 0 0
 file /stage1/recovery.cpio initramfs/stage1/recovery.cpio 644 0 0
