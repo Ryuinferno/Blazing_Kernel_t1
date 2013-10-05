@@ -3,7 +3,7 @@
 # variables
 VERSION="v15"
 TOOLCHAIN="/opt/linaro-4.7.4-2013.09/bin/arm-cortex_a9-linux-gnueabi-"
-STRIP="$TOOLCHAIN-strip"
+STRIP="${TOOLCHAIN}strip"
 OUTDIR="../out"
 OUTDIR2="out"
 ZIPDIR="../tools/zipfile"
@@ -16,8 +16,7 @@ REC_TOUCH="ramdisk_recovery_touch"
 REC_MOD="ramdisk_recovery_mod"
 REC_TWRP="ramdisk_recovery_twrp"
 REC_PHILZ="ramdisk_recovery_philz"
-MODULES_EXT=("fs/cifs/cifs.ko" "drivers/samsung/j4fs/j4fs.ko" "net/sunrpc/sunrpc.ko" "net/sunrpc/auth_gss/auth_rpcgss.ko" "fs/nfs/nfs.ko" "fs/lockd/lockd.ko")
-MODULES=("drivers/net/wireless/bcmdhd/dhd.ko" "drivers/scsi/scsi_wait_scan.ko")
+MODULES=("drivers/net/wireless/bcmdhd/dhd.ko" "drivers/scsi/scsi_wait_scan.ko" "fs/cifs/cifs.ko" "drivers/samsung/j4fs/j4fs.ko" "net/sunrpc/sunrpc.ko" "net/sunrpc/auth_gss/auth_rpcgss.ko" "fs/nfs/nfs.ko" "fs/lockd/lockd.ko")
 START=$(date +%s)
 
   case "$1" in
@@ -47,19 +46,8 @@ START=$(date +%s)
        
         # create modules first to include in ramdisk
         make -j8 CROSS_COMPILE=${TOOLCHAIN}
-
-        for module in "${MODULES[@]}" ; do
-            $STRIP --strip-unneeded --strip-debug "${module}"
-            #cp "${module}" ${ANDROID}/lib/modules
-            if [ ! -z "$blaze" ]; then
-                cp "${module}" ${ZIPDIR}/system/lib/modules
-            else
-                cp "${module}" ${OUTDIR2}
-            fi
-        done  
-        chmod 644 ${ANDROID}/lib/modules/*
         
-        for module in "${MODULES_EXT[@]}" ; do
+        for module in "${MODULES[@]}" ; do
             $STRIP --strip-unneeded --strip-debug "${module}"
             if [ ! -z "$blaze" ]; then
                 cp "${module}" ${ZIPDIR}/system/lib/modules
