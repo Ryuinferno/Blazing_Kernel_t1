@@ -3,6 +3,7 @@
 # variables
 VERSION="v12"
 TOOLCHAIN="/opt/linaro-4.7.4-2013.09/bin/arm-cortex_a9-linux-gnueabi-"
+STRIP="$TOOLCHAIN-strip"
 OUTDIR="../out"
 OUTDIR2="out"
 ZIPDIR="../tools/zipfile"
@@ -48,7 +49,8 @@ START=$(date +%s)
         make -j8 CROSS_COMPILE=${TOOLCHAIN}
 
         for module in "${MODULES[@]}" ; do
-            cp "${module}" ${ANDROID}/lib/modules
+            $STRIP --strip-unneeded --strip-debug "${module}"
+            #cp "${module}" ${ANDROID}/lib/modules
             if [ ! -z "$blaze" ]; then
                 cp "${module}" ${ZIPDIR}/system/lib/modules
             else
@@ -58,6 +60,7 @@ START=$(date +%s)
         chmod 644 ${ANDROID}/lib/modules/*
         
         for module in "${MODULES_EXT[@]}" ; do
+            $STRIP --strip-unneeded --strip-debug "${module}"
             if [ ! -z "$blaze" ]; then
                 cp "${module}" ${ZIPDIR}/system/lib/modules
             else
@@ -68,6 +71,7 @@ START=$(date +%s)
 
         cd usr/pvr-source/eu*/bu*/li*/om*
         make -j8 ARCH=arm CROSS_COMPILE=${TOOLCHAIN} KERNELDIR=~/Repos/Dual/kernel TARGET_PRODUCT="blaze_tablet" BUILD=release TARGET_SGX=540 PLATFORM_VERSION=4.0
+        $STRIP --strip-unneeded --strip-debug ../../../bi*/target/pvrsrvkm_sgx540_120.ko
         if [ ! -z "$blaze" ]; then
             mv ../../../bi*/target/pvrsrvkm_sgx540_120.ko ../../../../../../${ZIPDIR}/system/lib/modules
         else
@@ -79,9 +83,7 @@ START=$(date +%s)
         # create the android ramdisk
         rm initramfs/stage1/boot.cpio
         cd ${ANDROID}
-        rm lib/modules/$PLACEHOLDER
         find . | cpio -o -H newc > ../stage1/boot.cpio
-        echo > lib/modules/$PLACEHOLDER
         cd ..
 
         rm stage1/boot1.cpio

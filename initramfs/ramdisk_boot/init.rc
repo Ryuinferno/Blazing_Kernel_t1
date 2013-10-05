@@ -16,12 +16,14 @@ on early-init
 
 # create mountpoints
     mkdir /mnt 0775 root system
+    mkdir /lib 0775 root system
 
     export EXTERNAL_STORAGE /storage/sdcard0
     mkdir /storage 0550 system sdcard_r
     mkdir /storage/sdcard0 0000 system system
     symlink /storage/sdcard0 /sdcard
     symlink /storage/sdcard0 /mnt/sdcard
+    symlink /system/lib/modules /lib/modules
 # map "real" external storages paths also in same way. backwards compatibility.
     symlink /storage/extSdCard /mnt/extSdCard
     symlink /storage/UsbDriveA /mnt/UsbDriveA
