@@ -104,7 +104,7 @@ START=$(date +%s)
         echo > system/$PLACEHOLDER
         cd ..
 
-        # create the recovery ramdisk, "cwm6" is for 6.0.1.2, "old" is for 5.5.0.4, "touch" is for touch recovery, "twrp" for TWRP 2.6, "philz" for Philz recovery 5.15.0
+        # create the recovery ramdisk, "cwm6" is for 6.0.1.2, "old" is for 5.5.0.4, "touch" is for touch recovery, "twrp" for TWRP 2.6.3.0, "philz" for Philz recovery 5.15.0
         # default is modified 6.0.4.0
       case "$1" in
       touch)
