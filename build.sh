@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # variables
-VERSION="v15"
+VERSION="v16"
 TOOLCHAIN="/opt/linaro-4.7.4-2013.09/bin/arm-cortex_a9-linux-gnueabi-"
 STRIP="${TOOLCHAIN}strip"
 OUTDIR="../out"
