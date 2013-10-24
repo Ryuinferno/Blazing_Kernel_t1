@@ -16,7 +16,7 @@ REC_TOUCH="ramdisk_recovery_touch"
 REC_MOD="ramdisk_recovery_mod"
 REC_TWRP="ramdisk_recovery_twrp"
 REC_PHILZ="ramdisk_recovery_philz"
-MODULES=("drivers/net/wireless/bcmdhd/dhd.ko" "drivers/scsi/scsi_wait_scan.ko" "fs/cifs/cifs.ko" "drivers/samsung/j4fs/j4fs.ko" "net/sunrpc/sunrpc.ko" "net/sunrpc/auth_gss/auth_rpcgss.ko" "fs/nfs/nfs.ko" "fs/lockd/lockd.ko")
+MODULES=("drivers/net/wireless/bcmdhd/dhd.ko" "drivers/scsi/scsi_wait_scan.ko" "fs/cifs/cifs.ko" "drivers/samsung/j4fs/j4fs.ko" "drivers/samsung/exfat/exfat_fs.ko" "drivers/samsung/exfat/exfat_core.ko" "net/sunrpc/sunrpc.ko" "net/sunrpc/auth_gss/auth_rpcgss.ko" "fs/nfs/nfs.ko" "fs/lockd/lockd.ko")
 START=$(date +%s)
 
   case "$1" in
@@ -25,15 +25,7 @@ START=$(date +%s)
           make mrproper CROSS_COMPILE=${TOOLCHAIN}
           rm -rf ${OUTDIR}
           rm -rf ${OUTDIR2}
-          rm -f ../tools/zipfile/system/lib/modules/cifs.ko
-          rm -f ../tools/zipfile/system/lib/modules/dhd.ko
-          rm -f ../tools/zipfile/system/lib/modules/j4fs.ko
-          rm -f ../tools/zipfile/system/lib/modules/scsi_wait_scan.ko
-          rm -f ../tools/zipfile/system/lib/modules/pvrsrvkm_sgx540_120.ko
-          rm -f ../tools/zipfile/system/lib/modules/auth_rpcgss.ko
-          rm -f ../tools/zipfile/system/lib/modules/nfs.ko
-          rm -f ../tools/zipfile/system/lib/modules/lockd.ko
-          rm -f ../tools/zipfile/system/lib/modules/sunrpc.ko
+          rm -f ../tools/zipfile/system/lib/modules/*
    ;;
    *)  
         if [ ! -z "$blaze" ]; then

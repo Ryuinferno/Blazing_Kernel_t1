@@ -6,3 +6,5 @@
 
 obj-$(CONFIG_FM_RADIO)		+= fm_si47xx/
 obj-$(CONFIG_J4FS)		+= j4fs/
+obj-$(CONFIG_EXFAT)		+= exfat/
+
